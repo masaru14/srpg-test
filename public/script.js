@@ -3,7 +3,7 @@ const socket = io();
 const board = document.getElementById("board");
 
 let room="";
-let player=1;
+let player = 0;
 
 let p1={x:0,y:0};
 let p2={x:4,y:4};
@@ -20,7 +20,10 @@ function join(){
 }
 
 socket.on("startGame",(data)=>{
-    player = data.player;
+
+ console.log("startGame",data);
+
+ player = data.player;
 
  p1=data.p1;
  p2=data.p2;
