@@ -19,6 +19,7 @@ function join(){
 }
 
 socket.on("startGame",(data)=>{
+    player = data.player;
 
  p1=data.p1;
  p2=data.p2;
