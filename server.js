@@ -29,37 +29,24 @@ io.on("connection",(socket)=>{
 
   rooms[room].players++;
 
-  if(rooms[room].players === 1){
+  // プレイヤー番号決定
+  const player = rooms[room].players;
 
-   socket.emit("startGame",{
-    player:1,
-    p1:rooms[room].p1,
-    p2:rooms[room].p2,
-    turn:rooms[room].turn
-   });
-
-  }
-
-  if(rooms[room].players === 2){
-
-   io.to(room).emit("startGame",{
-    player:2,
-    p1:rooms[room].p1,
-    p2:rooms[room].p2,
-    turn:rooms[room].turn
-   });
-
-  }
+  socket.emit("startGame",{
+   player:player,
+   p1:rooms[room].p1,
+   p2:rooms[room].p2,
+   turn:rooms[room].turn
+  });
 
  });
 
  socket.on("move",(data)=>{
 
   const r = rooms[data.room];
-
   if(!r) return;
 
-  if(data.player === 1){
+  if(data.player===1){
    r.p1 = data.pos;
   }else{
    r.p2 = data.pos;
@@ -72,5 +59,6 @@ io.on("connection",(socket)=>{
  });
 
 });
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT,()=>console.log("server started"));
