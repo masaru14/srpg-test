@@ -6,45 +6,71 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
 
-app.use(express.static("public"));
+app.use(express.static(__dirname));
 
-const rooms = {};
+let rooms = {};
 
-io.on("connection", (socket) => {
+io.on("connection",(socket)=>{
 
-  socket.on("joinRoom",(roomId)=>{
+ console.log("connected");
 
-    socket.join(roomId);
+ socket.on("joinRoom",(room)=>{
 
-    if(!rooms[roomId]){
-      rooms[roomId]={
-        players:[],
-        turn:0
-      };
-    }
+  socket.join(room);
 
-    rooms[roomId].players.push(socket.id);
+  if(!rooms[room]){
+   rooms[room] = {
+    players:0,
+    p1:{x:0,y:0},
+    p2:{x:4,y:4},
+    turn:1
+   };
+  }
 
-    if(rooms[roomId].players.length===2){
+  rooms[room].players++;
 
-      io.to(roomId).emit("startGame",{
-        p1:{x:0,y:0},
-        p2:{x:4,y:4},
-        turn:0
-      });
+  if(rooms[room].players === 1){
 
-    }
+   socket.emit("startGame",{
+    player:1,
+    p1:rooms[room].p1,
+    p2:rooms[room].p2,
+    turn:rooms[room].turn
+   });
 
-  });
+  }
 
-  socket.on("move",(data)=>{
+  if(rooms[room].players === 2){
 
-    io.to(data.room).emit("update",data);
+   io.to(room).emit("startGame",{
+    player:2,
+    p1:rooms[room].p1,
+    p2:rooms[room].p2,
+    turn:rooms[room].turn
+   });
 
-  });
+  }
+
+ });
+
+ socket.on("move",(data)=>{
+
+  const r = rooms[data.room];
+
+  if(!r) return;
+
+  if(data.player === 1){
+   r.p1 = data.pos;
+  }else{
+   r.p2 = data.pos;
+  }
+
+  r.turn = data.turn;
+
+  io.to(data.room).emit("update",data);
+
+ });
 
 });
-
-server.listen(3000,()=>{
-  console.log("server started");
-});
+const PORT = process.env.PORT || 3000;
+server.listen(PORT,()=>console.log("server started"));
