@@ -13,6 +13,7 @@ let turn=0;
 function join(){
 
  room=document.getElementById("room").value;
+ console.log("join pressed",room);
 
  socket.emit("joinRoom",room);
 

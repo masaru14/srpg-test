@@ -32,36 +32,14 @@ io.on("connection",(socket)=>{
    };
   }
 
-  socket.on("joinRoom",(room)=>{
+  if(rooms[room].players >= 2){
+   socket.emit("full");
+   return;
+  }
 
- socket.join(room);
+  rooms[room].players++;
 
- if(!rooms[room]){
-  rooms[room] = {
-   players:0,
-   p1:{x:0,y:0},
-   p2:{x:4,y:4},
-   turn:1
-  };
- }
-
- if(rooms[room].players >= 2){
-  socket.emit("full");
-  return;
- }
-
- rooms[room].players++;
-
- const player = rooms[room].players;
-
- socket.emit("startGame",{
-  player:player,
-  p1:rooms[room].p1,
-  p2:rooms[room].p2,
-  turn:rooms[room].turn
- });
-
-});
+  const player = rooms[room].players;
 
   socket.emit("startGame",{
    player:player,
