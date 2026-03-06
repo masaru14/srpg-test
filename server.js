@@ -32,10 +32,36 @@ io.on("connection",(socket)=>{
    };
   }
 
-  rooms[room].players++;
+  socket.on("joinRoom",(room)=>{
 
-  // プレイヤー番号決定
-  const player = rooms[room].players;
+ socket.join(room);
+
+ if(!rooms[room]){
+  rooms[room] = {
+   players:0,
+   p1:{x:0,y:0},
+   p2:{x:4,y:4},
+   turn:1
+  };
+ }
+
+ if(rooms[room].players >= 2){
+  socket.emit("full");
+  return;
+ }
+
+ rooms[room].players++;
+
+ const player = rooms[room].players;
+
+ socket.emit("startGame",{
+  player:player,
+  p1:rooms[room].p1,
+  p2:rooms[room].p2,
+  turn:rooms[room].turn
+ });
+
+});
 
   socket.emit("startGame",{
    player:player,
