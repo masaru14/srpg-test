@@ -1,4 +1,13 @@
+const colors = [
+ "lightblue",
+ "pink",
+ "lightgreen",
+ "orange",
+ "violet",
+ "yellow"
+];
 const socket = io();
+const info = document.getElementById("info");
 
 const board = document.getElementById("board");
 
@@ -18,7 +27,6 @@ function join(){
  socket.emit("joinRoom",room);
 
 }
-
 socket.on("startGame",(data)=>{
 
  console.log("startGame",data);
@@ -29,21 +37,15 @@ socket.on("startGame",(data)=>{
  p2=data.p2;
  turn=data.turn;
 
+ info.innerText = "You are Player " + player;
+
  draw();
 
 });
 
-socket.on("update",(data)=>{
+socket.on("playerCount",(count)=>{
 
- if(data.player===1){
-  p1=data.pos;
- }else{
-  p2=data.pos;
- }
-
- turn=data.turn;
-
- draw();
+ info.innerText = "Players in room: " + count + " | You are Player " + player;
 
 });
 

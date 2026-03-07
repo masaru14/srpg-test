@@ -41,6 +41,11 @@ io.on("connection",(socket)=>{
 
   const player = rooms[room].players;
 
+  console.log("player joined room:",room,"player:",player);
+
+  // 人数を全員に送信
+  io.to(room).emit("playerCount", rooms[room].players);
+
   socket.emit("startGame",{
    player:player,
    p1:rooms[room].p1,
@@ -67,7 +72,14 @@ io.on("connection",(socket)=>{
 
  });
 
+ socket.on("disconnect",()=>{
+  console.log("player disconnected");
+ });
+
 });
 
 const PORT = process.env.PORT || 3000;
-server.listen(PORT,()=>console.log("server started"));
+
+server.listen(PORT,()=>{
+ console.log("server started");
+});
